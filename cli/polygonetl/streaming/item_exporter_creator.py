@@ -19,6 +19,7 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
+import logging
 
 from blockchainetl_common.jobs.exporters.console_item_exporter import ConsoleItemExporter
 from blockchainetl_common.jobs.exporters.multi_item_exporter import MultiItemExporter
@@ -72,6 +73,10 @@ def create_item_exporter(output):
         from blockchainetl_common.jobs.exporters.gcs_item_exporter import GcsItemExporter
         bucket, path = get_bucket_and_path_from_gcs_output(output)
         item_exporter = GcsItemExporter(bucket=bucket, path=path)
+    elif item_exporter_type == ItemExporterType.S3:
+        from blockchainetl_common.jobs.exporters.s3_item_exporter import S3ItemExporter
+        bucket, path = get_bucket_and_path_from_s3_output(output)
+        item_exporter = S3ItemExporter(bucket=bucket, path=path)
     elif item_exporter_type == ItemExporterType.CONSOLE:
         item_exporter = ConsoleItemExporter()
     else:
@@ -91,6 +96,17 @@ def get_bucket_and_path_from_gcs_output(output):
     return bucket, path
 
 
+def get_bucket_and_path_from_s3_output(output):
+    output = output.replace('s3://', '')
+    bucket_and_path = output.split('/', 1)
+    bucket = bucket_and_path[0]
+    if len(bucket_and_path) > 1:
+        path = bucket_and_path[1]
+    else:
+        path = ''
+    return bucket, path
+
+
 def determine_item_exporter_type(output):
     if output is not None and output.startswith('projects'):
         return ItemExporterType.PUBSUB
@@ -98,6 +114,8 @@ def determine_item_exporter_type(output):
         return ItemExporterType.POSTGRES
     elif output is not None and output.startswith('gs://'):
         return ItemExporterType.GCS
+    elif output is not None and output.startswith('s3://'):
+        return ItemExporterType.S3
     elif output is None or output == 'console':
         return ItemExporterType.CONSOLE
     else:
@@ -110,3 +128,4 @@ class ItemExporterType:
     GCS = 'gcs'
     CONSOLE = 'console'
     UNKNOWN = 'unknown'
+    S3 = 's3'
