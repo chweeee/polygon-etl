@@ -4,3 +4,4 @@
 
 black
 isort
+boto3==1.26.72
