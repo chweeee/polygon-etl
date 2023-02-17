@@ -74,6 +74,8 @@ class EthStreamerAdapter:
         if self._should_export(EntityType.TOKEN):
             tokens = self._extract_tokens(contracts)
 
+        print(len(blocks), len(transactions), len(logs), len(receipts))
+
         enriched_blocks = blocks \
             if EntityType.BLOCK in self.entity_types else []
         enriched_transactions = enrich_transactions(transactions, receipts) \
@@ -100,7 +102,6 @@ class EthStreamerAdapter:
             enriched_tokens
 
         all_items = [i for i in all_items if i['timestamp'] != '']
-        print(len(all_items))
 
         self.calculate_item_ids(all_items)
         self.calculate_item_timestamps(all_items)

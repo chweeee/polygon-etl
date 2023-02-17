@@ -70,7 +70,7 @@ class ExportReceiptsJob(BaseJob):
 
         results_cleaned = []
         for val in results:
-            if val != None:
+            if val == None:
                 results_cleaned.append(
                     {
                         'blockHash': "",
@@ -87,6 +87,8 @@ class ExportReceiptsJob(BaseJob):
                         'type': "",
                     }
                 )
+            else:
+                results_cleaned.append(val)
 
         receipts = [self.receipt_mapper.json_dict_to_receipt(result) for result in results_cleaned]
         if len(transaction_hashes) != len(receipts):
