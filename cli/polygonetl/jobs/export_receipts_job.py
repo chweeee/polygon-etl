@@ -69,9 +69,9 @@ class ExportReceiptsJob(BaseJob):
         results = rpc_response_batch_to_results(response)
         results = [i for i in results if i is not None]
         receipts = [self.receipt_mapper.json_dict_to_receipt(result) for result in results]
-        if len(transaction_hashes) != len(receipts):
-            logging.error('The number of receipts is not equal to the number of transaction hashes ' + ','.join(transaction_hashes))
-            raise ValueError('The number of receipts is not equal to the number of transaction hashes.')
+        # if len(transaction_hashes) != len(receipts):
+        #     logging.error('The number of receipts is not equal to the number of transaction hashes ' + ','.join(transaction_hashes))
+        #     raise ValueError('The number of receipts is not equal to the number of transaction hashes.')
         for receipt in receipts:
             self._export_receipt(receipt)
 
