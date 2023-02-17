@@ -73,7 +73,18 @@ class ExportReceiptsJob(BaseJob):
             if val != None:
                 results_cleaned.append(
                     {
-                        'logs': []
+                        'blockHash': "",
+                        'blockNumber': "",
+                        'transactionIndex': "",
+                        'transactionHash': "",
+                        'from': "",
+                        'to': "",
+                        'gasUsed': "",
+                        'contractAddress': "",
+                        'logs': [],
+                        'status': 0,
+                        'effectiveGasPrice': "",
+                        'type': "",
                     }
                 )
 

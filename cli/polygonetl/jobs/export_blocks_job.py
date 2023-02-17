@@ -81,7 +81,25 @@ class ExportBlocksJob(BaseJob):
             if val != None:
                 results_cleaned.append(
                     {
-                        'transactions': []
+                        'nonce': "",
+                        'hash': "",
+                        'baseFeePerGas': "",
+                        'number': "",
+                        'parentHash': "",
+                        'sha3Uncles': "",
+                        'logsBloom': "",
+                        'transactionsRoot': "",
+                        'stateRoot': "",
+                        'receiptsRoot': "",
+                        'miner': "",
+                        'difficulty': "",
+                        'extraData': "",
+                        'size': "",
+                        'gasLimit': "",
+                        'gasUsed': "",
+                        'timestamp': "",
+                        'transactions': [],
+                        'uncles': [],
                     }
                 )
 
