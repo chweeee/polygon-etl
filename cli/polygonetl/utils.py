@@ -79,7 +79,8 @@ def rpc_response_to_result(response):
             error_message = error_message + ' Make sure polygon node is synced.'
             # When nodes are behind a load balancer it makes sense to retry the request in hopes it will go to other,
             # synced node
-            raise RetriableValueError(error_message)
+            # raise RetriableValueError(error_message)
+            print(error_message)
         elif response.get('error') is not None and is_retriable_error(response.get('error').get('code')):
             raise RetriableValueError(error_message)
         raise ValueError(error_message)
