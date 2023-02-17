@@ -33,7 +33,7 @@ def hex_to_dec(hex_string):
     try:
         return int(hex_string, 16)
     except ValueError:
-        print("Not a hex string %s" % hex_string)
+        # print("Not a hex string %s" % hex_string)
         return hex_string
 
 
