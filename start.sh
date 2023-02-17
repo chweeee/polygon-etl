@@ -1,1 +1,1 @@
-./stream.sh &
+./reset.sh && ./stream.sh &

@@ -99,6 +99,8 @@ class EthStreamerAdapter:
             enriched_contracts + \
             enriched_tokens
 
+        all_items = [i for i in all_items if i['timestamp'] is not '']
+
         self.calculate_item_ids(all_items)
         self.calculate_item_timestamps(all_items)
 
