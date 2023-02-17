@@ -74,6 +74,7 @@ class ExportBlocksJob(BaseJob):
         blocks_rpc = list(generate_get_block_by_number_json_rpc(block_number_batch, self.export_transactions))
         response = self.batch_web3_provider.make_batch_request(json.dumps(blocks_rpc))
         results = rpc_response_batch_to_results(response)
+        results = [i for i in results if i is not None]
         blocks = [self.block_mapper.json_dict_to_block(result) for result in results]
 
         for block in blocks:
