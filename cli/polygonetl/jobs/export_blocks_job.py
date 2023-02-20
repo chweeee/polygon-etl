@@ -75,37 +75,10 @@ class ExportBlocksJob(BaseJob):
         response = self.batch_web3_provider.make_batch_request(json.dumps(blocks_rpc))
         results = rpc_response_batch_to_results(response)
 
-        results_cleaned = []
-        for val in results:
-            if val == None:
-                results_cleaned.append(
-                    {
-                        'nonce': "",
-                        'hash': "",
-                        'baseFeePerGas': "",
-                        'number': "",
-                        'parentHash': "",
-                        'sha3Uncles': "",
-                        'logsBloom': "",
-                        'transactionsRoot': "",
-                        'stateRoot': "",
-                        'receiptsRoot': "",
-                        'miner': "",
-                        'difficulty': "",
-                        'extraData': "",
-                        'size': "",
-                        'gasLimit': "",
-                        'gasUsed': "",
-                        'timestamp': "",
-                        'transactions': [],
-                        'uncles': [],
-                    }
-                )
-            else:
-                results_cleaned.append(val)
+        # remove all None
+        results_cleaned = [i for i in results if i is not None]
 
         blocks = [self.block_mapper.json_dict_to_block(result) for result in results_cleaned]
-
         for block in blocks:
             self._export_block(block)
 

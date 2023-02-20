@@ -53,6 +53,15 @@ class EthStreamerAdapter:
         if self._should_export(EntityType.RECEIPT) or self._should_export(EntityType.LOG):
             receipts, logs = self._export_receipts_and_logs(transactions)
 
+        # remove all the transaction objects that we cannot get the receipt for
+        filtered = []
+        for transaction in transactions:
+            tx_hash = transaction.get("hash")
+            for receipt in receipts:
+                if tx_hash == receipt.get("transaction_hash"):
+                    filtered.append(transaction)
+        transactions = filtered
+
         # Extract token transfers
         token_transfers = []
         if self._should_export(EntityType.TOKEN_TRANSFER):
@@ -74,7 +83,10 @@ class EthStreamerAdapter:
         if self._should_export(EntityType.TOKEN):
             tokens = self._extract_tokens(contracts)
 
-        print(len(blocks), len(transactions), len(logs), len(receipts))
+        logging.info(f"no. of blocks: {len(blocks)}")
+        logging.info(f"no. of txs: {len(transactions)}")
+        logging.info(f"no. of logs: {len(logs)}")
+        logging.info(f"no. of receipts: {len(receipts)}")
 
         enriched_blocks = blocks \
             if EntityType.BLOCK in self.entity_types else []
@@ -100,8 +112,6 @@ class EthStreamerAdapter:
             enriched_traces + \
             enriched_contracts + \
             enriched_tokens
-
-        all_items = [i for i in all_items if i['timestamp'] != '']
 
         self.calculate_item_ids(all_items)
         self.calculate_item_timestamps(all_items)

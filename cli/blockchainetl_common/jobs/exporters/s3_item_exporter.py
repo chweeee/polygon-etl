@@ -93,24 +93,26 @@ class S3ItemExporter:
                 raise ValueError('block_bundle must include the block.number field')
 
             # convert transactions data to csv and upload to s3
-            field_data_to_csv(block_bundle, block_number, "transactions")
-            upload_file_to_s3(self.storage_client, self.bucket, f'transactions_{block_number}.csv', f'transactions/{block_number}.csv')
-            os.remove(f'transactions_{block_number}.csv')
+            check = field_data_to_csv(block_bundle, block_number, "transactions")
+            if check is True:
+                upload_file_to_s3(self.storage_client, self.bucket, f'transactions_{block_number}.csv', f'transactions/{block_number}.csv')
+            else:
+                logging.info(f"No transactions from block_number {block_number} is uploaded to S3.")
 
             # convert logs data to csv and upload to s3
-            field_data_to_csv(block_bundle, block_number, "logs")
-            upload_file_to_s3(self.storage_client, self.bucket, f'logs_{block_number}.csv', f'logs/{block_number}.csv')
-            os.remove(f'logs_{block_number}.csv')
+            check = field_data_to_csv(block_bundle, block_number, "logs")
+            if check is True:
+                upload_file_to_s3(self.storage_client, self.bucket, f'logs_{block_number}.csv', f'logs/{block_number}.csv')
+            else:
+                logging.info(f"No logs from block_number {block_number} is uploaded to S3.")
 
             # convert token_transfers data to csv and upload to s3
             # field_data_to_csv(block_bundle, block_number, "token_transfers")
             # upload_file_to_s3(self.storage_client, self.bucket, f'token_transfers_{block_number}.csv', f'token_transfers/{block_number}.csv')
-            # os.remove(f'token_transfers_{block_number}.csv')
 
             # convert traces data to csv and upload to s3
             # field_data_to_csv(block_bundle, block_number, "traces")
             # upload_file_to_s3(self.storage_client, self.bucket, f'traces_{block_number}.csv', f'traces/{block_number}.csv')
-            # os.remove(f'traces_{block_number}.csv')
 
     def close(self):
         pass
@@ -120,8 +122,12 @@ def field_data_to_csv(block_bundle, block_number, field_name):
     field_data = block_bundle.get(field_name)
     if field_data is None:
         raise ValueError(f'block_bundle must include the {field_name} field')
+    elif isinstance(field_data, list) and len(field_data) == 0:
+        logging.info(f"No data to be exported from {field_name} in block_number {block_number}")
+        return False
     else:
         import csv
+        logging.info(f"{len(field_data)} rows of data to be exported from {field_name} in block_number {block_number}")
         filename = f"{field_name}_{block_number}.csv"
         with open(filename, "w", newline="") as f:
             if len(field_data) == 0:
@@ -131,12 +137,14 @@ def field_data_to_csv(block_bundle, block_number, field_name):
                 cw = csv.DictWriter(f, headers, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                 cw.writeheader()
                 cw.writerows(field_data)
+        return True
 
 
 def upload_file_to_s3(client, bucket_name, local_file_path, object_file_name):
     try:
         client.upload_file(local_file_path, bucket_name, object_file_name)
         logging.info(f'Uploaded file s3://{bucket_name}/{object_file_name}')
+        os.remove(local_file_path)
     except ClientError as e:
         logging.error(e)
 

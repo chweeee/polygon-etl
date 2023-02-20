@@ -23,6 +23,7 @@
 
 import itertools
 import warnings
+import logging
 
 from polygonetl.misc.retriable_value_error import RetriableValueError
 
@@ -75,7 +76,7 @@ def rpc_response_to_result(response):
     result = response.get('result')
     if result is None:
         error_message = 'result is None in response {}.'.format(response)
-        print(error_message)
+        logging.info(error_message)
         return None
         # if response.get('error') is None:
         #     error_message = error_message + ' Make sure polygon node is synced.'
